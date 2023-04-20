@@ -1,0 +1,65 @@
+version: '3'
+    
+networks:
+  achievementsbot_net: {}
+
+services:
+
+  achievementsbot:
+    container_name: achievementsbot
+    image: achievementsbot
+    build:
+      context: .
+    restart: "no"
+    depends_on:
+      dbredis:
+        condition: service_healthy
+      dbpostgre:
+        condition: service_healthy
+    networks:
+      - achievementsbot_net
+
+  dbpostgre:
+    container_name: dbpostgre
+    image: postgres:14.1
+    restart: unless-stopped
+    env_file: 
+      - ./.env
+    ports:
+      - ${DB_PORT}:5432
+    volumes:
+        - ./data/pg_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - achievementsbot_net
+
+  dbredis:
+    image: redis:6.2-alpine
+    container_name: dbredis
+    restart: unless-stopped
+    ports:
+      - 6379:6379
+    volumes: 
+      - ./data/redis:/data
+    env_file: 
+      - ./.env
+    environment:
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - achievementsbot_net
+
+  
