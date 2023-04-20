@@ -1,7 +1,8 @@
 version: '3'
     
 networks:
-  achievementsbot_net: {}
+  achievementsbot_net: 
+    name: "achievementsbot_net"
 
 services:
 
