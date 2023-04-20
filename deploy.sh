@@ -1,6 +1,6 @@
 #!/bin/bash
 
-APP_DIR="D:/Files/Documents/ХНУРЕ/3 курс/2 семестр/AUnix/ПЗ/ПЗ 2/project/TEST"
+APP_DIR=/home/askador/nure/aUnix/pz2/TEST
 GIT_REPO=https://github.com/askador/aUnix-pz2.git
 CONTAINER_NAMES=("achievementsbot" "dbpostgre" "dbredis")
 
